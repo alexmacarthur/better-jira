@@ -40,7 +40,13 @@
         });
       },
       save: function() {
-        Storage.set({columnWidth: app.data.columnWidth});
+        Storage.set({columnWidth: app.data.columnWidth}, function() {
+          chrome.tabs.executeScript({
+            code: 'var newColumnWidth = ' + app.data.columnWidth + ';'
+          }, function() {
+            chrome.tabs.executeScript({file: 'better-jira.js'});
+          });
+        });
       }
     };
 
