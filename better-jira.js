@@ -28,10 +28,10 @@
     setPreferredWidth();
   }
 
-  function setPreferredWidth(fromPopup = false) {
+  function setPreferredWidth() {
     let preferredWidth, columnCount, padding, width;
 
-    preferredWidth = fromPopup === false ? data.columnWidth : fromPopup;
+    preferredWidth = data.columnWidth;
 
     columnCount = document.querySelector('.ghx-swimlane > .ghx-columns')
       .querySelectorAll('.ghx-column.ghx-narrow-card')
@@ -44,6 +44,10 @@
   }
 
   window.addEventListener('load', initiate);
+
+  document.addEventListener('better-jira:updated', (event) => {
+    getPreferredWidth(event.detail);
+  });
 
   if(typeof newColumnWidth !== 'undefined') {
     setPreferredWidth(newColumnWidth);

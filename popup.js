@@ -10,6 +10,7 @@
       data: {},
       defaults: {
         columnWidth: 200,
+        updatedEvent: 'better-jira:updated',
       },
       main: function() {
         app.setDefaults();
@@ -40,12 +41,24 @@
         });
       },
       save: function() {
-        Storage.set({columnWidth: app.data.columnWidth}, function() {
-          chrome.tabs.executeScript({
-            code: 'var newColumnWidth = ' + app.data.columnWidth + ';'
-          }, function() {
-            chrome.tabs.executeScript({file: 'better-jira.js'});
-          });
+        Storage.set({columnWidth: app.data.columnWidth}, app.refresh);
+      },
+      refresh: function() {
+        let code = [
+          `(function()`,
+          `{`,
+            `'use strict';`,
+
+            `let updateEvent = new CustomEvent('${app.defaults.updatedEvent}', {`,
+              `detail: {`,
+                `columnWidth: ${app.data.columnWidth}`,
+              `}`,
+            `});`,
+            `document.dispatchEvent(updateEvent);`,
+          `})();`,
+        ];
+        chrome.tabs.executeScript({
+          code: code.join('')
         });
       }
     };
